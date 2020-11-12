@@ -1,0 +1,17 @@
+title: "Stage File Proxy"
+class: \Drutiny\algm\Audit\StageFileProxy
+name: algm:StageFileProxy
+tags:
+  - Space
+  - Storage
+description: |
+  A policy to notify when stage file proxy is on a non-prod environment
+success: |
+  {{ status }}
+failure: |
+  {{ status }}
+warning: |
+  {{ warning_message }}
+parameters:
+  module_to_check:
+    default: stage_file_proxy
