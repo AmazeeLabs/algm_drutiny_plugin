@@ -1,0 +1,17 @@
+title: "Email reroute checker"
+class: \Drutiny\algm\Audit\EmailRerouteChecker
+name: algm:EmailRerouteChecker
+tags:
+  - Email
+  - Routing
+description: |
+  A policy check the email rerouting on non-prod environments
+success: |
+  {{ status }}
+failure: |
+  {{ status }}
+warning: |
+  {{ warning_message }}
+parameters:
+  module_to_check:
+    default: smtp
