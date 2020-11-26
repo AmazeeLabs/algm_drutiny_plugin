@@ -1,0 +1,11 @@
+title: 'ALGM Beta Drupal 8 & 9 Testing Profile'
+description: 'This audit is for testing Drupal 8 & Drupal 9 policies which are in WIP'
+policies:
+  # WIP
+  'algm:BrokenLinksSitemap': { severity: medium }
+  'algm:BrokenLinks': { severity: medium }
+  'algm:D8CoreOutdated': { severity: medium }
+  'algm:D8DrushOutdated': { severity: medium }
+  'algm:SSLChecker': { severity: medium }
+  'algm:StageFileProxy': { severity: medium }
+  'algm:StorageSpace': { severity: medium }
