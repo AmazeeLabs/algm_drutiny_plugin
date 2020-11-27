@@ -19,7 +19,8 @@ parameters:
     default: "%root/sites"
   exclude:
     default:
-      - sites/default/files/js
+      - "sites/default/files/js"
+      - "sites/default/files/js/optimized"
   filetypes:
     default:
       - php

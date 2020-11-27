@@ -76,7 +76,6 @@ class DoubleFileExtension extends Audit {
     }
 
     $matches = array_filter(explode(PHP_EOL, $output));
-    
     $matches = array_map(function ($line) {
       list($filepath, $date) = explode(' ', $line);
       return [
@@ -87,6 +86,10 @@ class DoubleFileExtension extends Audit {
       ];
     }, $matches);
 
+    $matches = array_filter($matches, function($line) {
+      return !strpos($line['basename'], 'js.gz') !== false;
+    });
+
     $results = [
       'found' => count($matches),
       'findings' => $matches,
@@ -95,8 +98,7 @@ class DoubleFileExtension extends Audit {
       }, $matches)))
     ];
 
-
-    //TODO: Add a condiational check for Markdown format
+    //TODO: Add a conditional check for Markdown format
     $columns = ['Basename', 'Date', 'Filename'];
     $rows = [];
     foreach ($results['findings'] as $key => $file) {
@@ -104,8 +106,7 @@ class DoubleFileExtension extends Audit {
     }
 
     $md_table = new MarkdownTableGenerator($columns, $rows);
-
-    $results['findings'][] = ['markdown_display' => $md_table->render()];
+    $results['findings'] = ['markdown_display' => $md_table->render()];
 
     $sandbox->setParameter('results', $results);
 
