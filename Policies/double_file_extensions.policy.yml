@@ -11,10 +11,9 @@ description: |
   Drupal Security team: "Additionally, it's recommended that you audit all previously uploaded files to check for malicious extensions. Look specifically for files that include more than one extension, like .php.txt or .html.gif."
 success: No double file extensions could be found
 failure: >-
-  {{ results.found }} files with double extensions were found:
-  {{#results.findings}}
-  {{ markdown_display }}
-  {{/results.findings}}
+  {{ results.found }} file/s with double extensions was/were found:
+
+  {{#results.findings}}{{ markdown_display }}{{/results.findings}}
 parameters:
   directory:
     default: "%root/sites"
