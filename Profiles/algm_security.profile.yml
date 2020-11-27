@@ -1,0 +1,4 @@
+title: 'ALGM Security audit'
+description: 'This profile is for sites which contain security policies that need to be rolled out ad-hoc'
+policies:
+  'Security:DoubleFileExtension': { severity: critical }
