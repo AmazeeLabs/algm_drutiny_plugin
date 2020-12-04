@@ -48,6 +48,10 @@ class EmailRerouteChecker extends Audit {
     // else we check only this one
     $module_to_check = $sandbox->getParameter('module_to_check');
 
+    $status = $sandbox->drush(['format' => 'json'])->status();
+    if (!$status) {
+      return Audit::ERROR;
+    }
 
     // First check that we are in a dev env
     $command = "env";
@@ -67,7 +71,7 @@ class EmailRerouteChecker extends Audit {
     }
     print $lagoon_env_type . PHP_EOL;
     if(!$lagoon_env_type) {
-      $msg = 'Cannot determinate the environment (production or not).' . PHP_EOL;
+      $msg = 'Cannot determinate the environment.' . PHP_EOL;
       $sandbox->setParameter('warning_message', $msg);
       return Audit::WARNING;
     }
@@ -88,6 +92,12 @@ class EmailRerouteChecker extends Audit {
       print "SMTP module found" . PHP_EOL;
     }
 
+    // reroute_email
+    if (isset($info['reroute_email']) && $info['reroute_email']['status'] === 'enabled') {
+      // do something
+      print "Reroute email module found" . PHP_EOL;
+    }
+
     // Swiftmailer
     if (isset($info['swiftmailer']) && strtolower($info['swiftmailer']['status']) === 'enabled') {
       // do something
@@ -96,6 +106,16 @@ class EmailRerouteChecker extends Audit {
       $settings = $sandbox->exec($cmd);
       print_r($settings);
     }
+
+    // Search config/sync
+    $settings_path = $status['root'] . "/sites/default";
+    print $settings_path . PHP_EOL;
+    $cmd = "grep -il \"smtp_host\" {$settings_path}";
+    $results = $sandbox->exec($cmd);
+    print_r($results);
+
+    // Check `development.settings.php` or `settings.development.php`
+
 
     return Audit::SUCCESS;
   }
