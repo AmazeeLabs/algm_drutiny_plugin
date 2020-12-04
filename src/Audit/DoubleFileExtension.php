@@ -115,5 +115,4 @@ class DoubleFileExtension extends Audit {
     }
     return Audit::FAIL;
   }
-
 }
