@@ -9,7 +9,7 @@ description: |
 success: |
   {{ status }}
 failure: |
-  {{ status }}
+  {{ warning_message }}
 warning: |
   {{ warning_message }}
 parameters:

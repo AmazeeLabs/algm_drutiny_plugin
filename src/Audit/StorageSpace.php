@@ -84,15 +84,15 @@ class StorageSpace extends Audit {
     } //end for
 
     if (count($storage_warnings)) {
-      $msg = "The following filesystems are bellow or euqal to the threshold ({$threshold}%)." . PHP_EOL;
+      $msg = "The following filesystems are below or equal to the threshold ({$threshold}%)." . PHP_EOL;
       foreach ($storage_warnings as $item) {
         $msg .= $item . PHP_EOL;
       }
       $sandbox->setParameter('warning_message', $msg);
-      return Audit::WARNING;
+      return Audit::FAIL;
     }
 
-    $sandbox->setParameter('status', "All filestystems have free space above threshhold ({$threshold}%).");
+    $sandbox->setParameter('status', "All filesystems have free space above threshold ({$threshold}%).");
     return Audit::SUCCESS;
   }
 }
