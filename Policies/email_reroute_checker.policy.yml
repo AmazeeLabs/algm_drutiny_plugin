@@ -14,4 +14,4 @@ warning: |
   {{ warning_message }}
 parameters:
   module_to_check:
-    default: smtp
+    default: reroute_email

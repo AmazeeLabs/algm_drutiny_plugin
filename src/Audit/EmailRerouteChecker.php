@@ -44,10 +44,10 @@ class EmailRerouteChecker extends Audit {
    */
   public function audit(Sandbox $sandbox) {
 
-    // If parameter is all, then we proceed normally,
-    // else we check only this one
+    // Not in actual use for now
     $module_to_check = $sandbox->getParameter('module_to_check');
 
+    $status_output = '';
     $status = $sandbox->drush(['format' => 'json'])->status();
     if (!$status) {
       return Audit::ERROR;
@@ -69,7 +69,7 @@ class EmailRerouteChecker extends Audit {
         $lagoon_env_type = $info[1];
       }
     }
-    print $lagoon_env_type . PHP_EOL;
+    // print $lagoon_env_type . PHP_EOL;
     if(!$lagoon_env_type) {
       $msg = 'Cannot determinate the environment.' . PHP_EOL;
       $sandbox->setParameter('warning_message', $msg);
@@ -79,45 +79,69 @@ class EmailRerouteChecker extends Audit {
     if ($lagoon_env_type === 'production') {
       $msg = 'This policy can only run in a non-production environment.' . PHP_EOL;
       $sandbox->setParameter('warning_message', $msg);
-      // return Audit::WARNING;
+      //return Audit::WARNING;
     }
 
-    // Let's start module by module
+   // Let's start module by module
     // because modules hav different settings
     $info = $sandbox->drush(['format' => 'json'])->pmList();
 
-    // SMTP
-    if (isset($info['smtp']) && $info['smtp']['status'] === 'enabled') {
+    // Reroute_email
+    if (isset($info['reroute_email']) && strtolower($info['reroute_email']['status']) === 'enabled') {
       // do something
-      print "SMTP module found" . PHP_EOL;
+      $cmd = "drush cget reroute_email.settings --include-overridden --format=json";
+      $settings = json_decode($sandbox->exec($cmd), TRUE);
+      // TODO: Better logic on address condition maybe?
+      if($settings['enable'] && $settings['address']) {
+        $status_output = 'Reroute email is enabled.' . PHP_EOL;
+        $status_output .= 'All emails are redirected to: ' . $settings['address'] . PHP_EOL;
+        $sandbox->setParameter('status', trim($status_output));
+        // return Audit::SUCCESS;
+      }
     }
 
-    // reroute_email
-    if (isset($info['reroute_email']) && $info['reroute_email']['status'] === 'enabled') {
+    // SMTP
+    if (isset($info['smtp']) && strtolower($info['smtp']['status']) === 'enabled') {
       // do something
-      print "Reroute email module found" . PHP_EOL;
     }
 
     // Swiftmailer
+    // This is a quick and dirty solution
     if (isset($info['swiftmailer']) && strtolower($info['swiftmailer']['status']) === 'enabled') {
       // do something
       print "SWIFTMAILER module found" . PHP_EOL;
       $cmd = "drush cget swiftmailer.transport --include-overridden --format=json";
-      $settings = $sandbox->exec($cmd);
-      print_r($settings);
+      $settings = json_decode($sandbox->exec($cmd), TRUE);
+      $smtp_host = $settings['smtp_host'];
+      $search_for = 'mailhog';
+      if(preg_match("/{$search_for}/i", $smtp_host)) {
+        $status_output = 'SMTP host is configured to use: ' . $smtp_host . PHP_EOL;
+        $sandbox->setParameter('status', trim($status_output));
+        return Audit::SUCCESS;
+      }
     }
 
-    // Search config/sync
+    // Let's try to search in settings
     $settings_path = $status['root'] . "/sites/default";
-    print $settings_path . PHP_EOL;
-    $cmd = "grep -il \"smtp_host\" {$settings_path}";
+    $cmd = 'find ' . $settings_path . ' -name "*.php" | xargs grep -i "smtp\|mail"';
     $results = $sandbox->exec($cmd);
-    print_r($results);
+    $files = explode(PHP_EOL, $results);
+    foreach ($files as $file) {
+      print $file . PHP_EOL;
+      $search_for = 'development';
+      $is_development_setting_file = preg_match("/{$search_for}/i", $file);
+      $search_for = "\[\'smtp_host\'\] = \'mailhog";
+      $is_using_mailhog = preg_match("/{$search_for}/i", $file);
+      if ($is_development_setting_file && $is_using_mailhog) {
+        $status_output = 'SMTP host is configured to use mailhog.' . PHP_EOL;
+        $sandbox->setParameter('status', trim($status_output));
+        return Audit::SUCCESS;
+      }
+    }
 
-    // Check `development.settings.php` or `settings.development.php`
-
-
-    return Audit::SUCCESS;
+    $status_output = 'Could not deternimate the status of the SMTP host in the environment.' . PHP_EOL;
+    $sandbox->setParameter('status', trim($status_output));
+    return Audit::FAIL;
   }
 
 } //end class
