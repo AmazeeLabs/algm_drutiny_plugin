@@ -143,7 +143,6 @@ class EmailRerouteChecker extends Audit {
     $prod_smtp_host = '';
     $dev_reroute_email = '';
     foreach ($files as $file) {
-      print $file. PHP_EOL;
       $search_for = 'development';
       $is_development_setting_file = preg_match("/{$search_for}/i", $file);
       $search_for = 'production';
@@ -172,6 +171,11 @@ class EmailRerouteChecker extends Audit {
     $dev_smtp_host = preg_replace("/\'|\;/", "" , $dev_smtp_host);
     $dev_reroute_email = preg_replace("/\'|\;/", "" , $dev_reroute_email);
 
+    // Another case is not to have retoure_email but have something like
+    // config['amag_processes.location_settings']['reroute_email_address'] = 'development+amag@amazee.com';
+    // so let's try to detect something like that
+    // TODO: Maybe check if lines are commented at the beginning
+    // or even better get the actual config and check with site config
     if (!empty($dev_reroute_email)) {
       $status_output = "All emails are redirected to " . $dev_reroute_email . PHP_EOL;
       $sandbox->setParameter('status', trim($status_output));
@@ -189,18 +193,13 @@ class EmailRerouteChecker extends Audit {
       return Audit::SUCCESS;
     }
 
-    // Another case is not to have retoure_email but have something like
-    // config['amag_processes.location_settings']['reroute_email_address'] = 'development+amag@amazee.com';
-    // so let's try to detect something like that
-
-
-
-
     // TODO: We definitely need more cases/scenarios to inspect
     // the above implementation is just a basic check
     // and is oriented to AmazeeIO environments
+    // e.g.
+    // 1. Check config folder for reroute_email records
 
-    $status_output = 'Could not deternimate the status of the SMTP host in the environment.' . PHP_EOL;
+    $status_output = 'Could not determinate the status of the SMTP host in the environment.' . PHP_EOL;
     $sandbox->setParameter('status', trim($status_output));
     return Audit::FAIL;
   }
