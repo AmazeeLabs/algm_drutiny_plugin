@@ -141,13 +141,17 @@ class EmailRerouteChecker extends Audit {
     // then compare them
     $dev_smtp_host = '';
     $prod_smtp_host = '';
+    $dev_reroute_email = '';
     foreach ($files as $file) {
+      print $file. PHP_EOL;
       $search_for = 'development';
       $is_development_setting_file = preg_match("/{$search_for}/i", $file);
       $search_for = 'production';
       $is_production_setting_file = preg_match("/{$search_for}/i", $file);
       $search_for = "\[\'smtp_host\'\]";
       $contains_smtp_host = preg_match("/{$search_for}/i", $file);
+      $search_for = "reroute_email";
+      $has_reroute_in_settings = preg_match("/{$search_for}/i", $file);
 
       $split = "['smtp_host'] =";
       if ($is_development_setting_file && $contains_smtp_host) {
@@ -158,20 +162,39 @@ class EmailRerouteChecker extends Audit {
         $smtp_host = explode($split,$file);
         $prod_smtp_host = $smtp_host[1];
       }
+      if ($is_development_setting_file && $has_reroute_in_settings) {
+        $arr = explode(" = ",$file);
+        $dev_reroute_email = $arr[1];
+      }
     }
 
     $prod_smtp_host = preg_replace("/\'|\;/", "" , $prod_smtp_host);
     $dev_smtp_host = preg_replace("/\'|\;/", "" , $dev_smtp_host);
+    $dev_reroute_email = preg_replace("/\'|\;/", "" , $dev_reroute_email);
 
-    if( $prod_smtp_host != $dev_smtp_host) {
+    if (!empty($dev_reroute_email)) {
+      $status_output = "All emails are redirected to " . $dev_reroute_email . PHP_EOL;
+      $sandbox->setParameter('status', trim($status_output));
+      return Audit::SUCCESS;
+    }
+
+    if (!empty($prod_smtp_host)
+      && !empty($dev_smtp_host)
+      && $prod_smtp_host != $dev_smtp_host) {
       $status_output = "SMTP host is different on prod and dev environments." . PHP_EOL;
       $status_output .= "SMTP host in production:\t" . $prod_smtp_host . PHP_EOL;
       $status_output .= "SMTP host in environment:\t" . $dev_smtp_host . PHP_EOL;
       $status_output .= "Notice: You may want to check further these settings." . PHP_EOL;
       $sandbox->setParameter('status', trim($status_output));
       return Audit::SUCCESS;
-
     }
+
+    // Another case is not to have retoure_email but have something like
+    // config['amag_processes.location_settings']['reroute_email_address'] = 'development+amag@amazee.com';
+    // so let's try to detect something like that
+
+
+
 
     // TODO: We definitely need more cases/scenarios to inspect
     // the above implementation is just a basic check
