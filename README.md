@@ -16,8 +16,28 @@ This plugin provides a list of standard policy collections that can be used by D
     If you have drush but need to update to Drush 9 way of things, then this is your friend:
     https://stackoverflow.com/questions/55587919/where-drush-9-aliases-file-should-be-located-in-drupal-8
 
-  4. Test Drutiny is running - `./vendor/bin/drutiny`
+    To install globally in terminal (But aware that this will affect previous Drush setup)
+    In your user folder.
 
+    $ `composer global require drush/drush:^9`
+
+  4. Drush Setup folder structure in ~/.drush/
+
+    ~/.drush/
+      - cache/ (might not be there)
+      - commands/ (might not be there)
+      - sites/ ( Add this Drush Alias folder. This is where you add your sitename.site.yml for each sites you'll connect to.)
+      - drush.yml
+
+      - drush.yml should have:
+
+      drush:
+        paths:
+          alias-path:
+            - '${env.home}/.drush/sites'
+
+
+  5. Test Drutiny is running - `./vendor/bin/drutiny`
 
 ## What is this?
 
