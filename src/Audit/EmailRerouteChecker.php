@@ -79,7 +79,7 @@ class EmailRerouteChecker extends Audit {
     if ($lagoon_env_type === 'production') {
       $msg = 'This policy can only run in a non-production environment.' . PHP_EOL;
       $sandbox->setParameter('warning_message', $msg);
-      //return Audit::WARNING;
+      return Audit::WARNING;
     }
 
    // Let's start module by module
@@ -96,7 +96,7 @@ class EmailRerouteChecker extends Audit {
         $status_output = 'Reroute email is enabled.' . PHP_EOL;
         $status_output .= 'All emails are redirected to: ' . $settings['address'] . PHP_EOL;
         $sandbox->setParameter('status', trim($status_output));
-        // return Audit::SUCCESS;
+        return Audit::SUCCESS;
       }
     }
 
@@ -109,7 +109,6 @@ class EmailRerouteChecker extends Audit {
     // This is a quick and dirty solution
     if (isset($info['swiftmailer']) && strtolower($info['swiftmailer']['status']) === 'enabled') {
       // do something
-      print "SWIFTMAILER module found" . PHP_EOL;
       $cmd = "drush cget swiftmailer.transport --include-overridden --format=json";
       $settings = json_decode($sandbox->exec($cmd), TRUE);
       $smtp_host = $settings['smtp_host'];
@@ -127,7 +126,6 @@ class EmailRerouteChecker extends Audit {
     $results = $sandbox->exec($cmd);
     $files = explode(PHP_EOL, $results);
     foreach ($files as $file) {
-      print $file . PHP_EOL;
       $search_for = 'development';
       $is_development_setting_file = preg_match("/{$search_for}/i", $file);
       $search_for = "\[\'smtp_host\'\] = \'mailhog";
@@ -138,6 +136,46 @@ class EmailRerouteChecker extends Audit {
         return Audit::SUCCESS;
       }
     }
+
+    // Idea: if you find instances of smtp_host in prod and dev php settings
+    // then compare them
+    $dev_smtp_host = '';
+    $prod_smtp_host = '';
+    foreach ($files as $file) {
+      $search_for = 'development';
+      $is_development_setting_file = preg_match("/{$search_for}/i", $file);
+      $search_for = 'production';
+      $is_production_setting_file = preg_match("/{$search_for}/i", $file);
+      $search_for = "\[\'smtp_host\'\]";
+      $contains_smtp_host = preg_match("/{$search_for}/i", $file);
+
+      $split = "['smtp_host'] =";
+      if ($is_development_setting_file && $contains_smtp_host) {
+        $smtp_host = explode($split,$file);
+        $dev_smtp_host = $smtp_host[1];
+      }
+      if ($is_production_setting_file && $contains_smtp_host) {
+        $smtp_host = explode($split,$file);
+        $prod_smtp_host = $smtp_host[1];
+      }
+    }
+
+    $prod_smtp_host = preg_replace("/\'|\;/", "" , $prod_smtp_host);
+    $dev_smtp_host = preg_replace("/\'|\;/", "" , $dev_smtp_host);
+
+    if( $prod_smtp_host != $dev_smtp_host) {
+      $status_output = "SMTP host is different on prod and dev environments." . PHP_EOL;
+      $status_output .= "SMTP host in production:\t" . $prod_smtp_host . PHP_EOL;
+      $status_output .= "SMTP host in environment:\t" . $dev_smtp_host . PHP_EOL;
+      $status_output .= "Notice: You may want to check further these settings." . PHP_EOL;
+      $sandbox->setParameter('status', trim($status_output));
+      return Audit::SUCCESS;
+
+    }
+
+    // TODO: We definitely need more cases/scenarios to inspect
+    // the above implementation is just a basic check
+    // and is oriented to AmazeeIO environments
 
     $status_output = 'Could not deternimate the status of the SMTP host in the environment.' . PHP_EOL;
     $sandbox->setParameter('status', trim($status_output));
