@@ -23,7 +23,8 @@
     "require": {
         "drutiny/plugin-drupal-8": "^2.3",
         "drutiny/plugin-drupal-7": "^2.3",
-        "spatie/ssl-certificate": "^1.20"
+        "spatie/ssl-certificate": "^1.20",
+        "rlanvin/php-ip": "^2.1"
     },
     "autoload": {
         "psr-4": {

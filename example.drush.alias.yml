@@ -1,8 +1,8 @@
 prod:
   host: ssh.lagoon.amazeeio.cloud
+  user: site-name-ch-prod
   root: /app/web
   uri: https://www.site-name.ch
-  user: site-name-ch-prod
   remote-host: ssh.lagoon.amazeeio.cloud
   remote-user: site-name-ch-prod
   ssh-options: '-o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 32222'
@@ -10,6 +10,7 @@ staging:
   host: ssh.lagoon.amazeeio.cloud
   user: site-name-ch-pre-prod
   root: /app/web
+  uri: https://www.site-name.ch
   remote-host: ssh.lagoon.amazeeio.cloud
   remote-user: site-name-ch-pre-prod
   ssh-options: '-o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 32222'
@@ -17,6 +18,7 @@ dev:
   host: ssh.lagoon.amazeeio.cloud
   user: site-name-ch-dev
   root: /app/web
+  uri: https://www.site-name.ch
   remote-host: ssh.lagoon.amazeeio.cloud
   remote-user: site-name-ch-dev
   ssh-options: '-o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p 32222'
