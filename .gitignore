@@ -6,3 +6,4 @@ composer.lock
 *.phar
 .build
 dev-*
+drush.alias.yml
