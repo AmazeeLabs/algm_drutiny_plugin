@@ -9,3 +9,4 @@ policies:
   'algm:SSLChecker': { severity: medium }
   'algm:StageFileProxy': { severity: medium }
   'algm:StorageSpace': { severity: medium }
+  'algm:CdnCheck': { severity: medium }
