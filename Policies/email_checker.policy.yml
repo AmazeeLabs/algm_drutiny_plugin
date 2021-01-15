@@ -1,11 +1,11 @@
-title: "Email reroute checker"
-class: \Drutiny\algm\Audit\EmailRerouteChecker
-name: algm:EmailRerouteChecker
+title: "Email checker"
+class: \Drutiny\algm\Audit\EmailChecker
+name: algm:EmailChecker
 tags:
   - Email
   - Routing
 description: |
-  A policy check the email rerouting on non-prod environments
+  A policy check that emails are not sending on non-prod environments.
 success: |
   {{ status }}
 failure: |

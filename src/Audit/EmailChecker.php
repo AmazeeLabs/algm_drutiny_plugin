@@ -27,7 +27,7 @@ use Drutiny\Target\DrushTarget;
  *  description = "Module to check",
  * )
  */
-class EmailRerouteChecker extends Audit {
+class EmailChecker extends Audit {
 
   /**
    * Check that target is actually a DrushTarget
