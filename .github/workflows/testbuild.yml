@@ -18,8 +18,8 @@ jobs:
         uses: AmazeeLabs/drutiny_build_github_action@v0.0.3
         with:
           tag-ref: ${{ steps.get-tag.outputs.tag }}
-          composer-packages: "bomoko/algm_drutiny_profile:dev-master, bomoko/lagoon-formatter:dev-master"
-          composer-repos: "bomoko/algm_drutiny_plugin vcs https://github.com/AmazeeLabs/algm_drutiny.git"
+          composer-packages: "bomoko/algm_drutiny_profile, bomoko/lagoon-formatter"
+          composer-repos: "bomoko/algm_drutiny_profile vcs https://github.com/AmazeeLabs/algm_drutiny.git"
 
       - name: Change Directory
         run: cd ./drutiny && ls -la

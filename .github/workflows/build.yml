@@ -17,11 +17,13 @@ jobs:
 
       - name: Build Drutiny Phar
         id: drutiny-build
-        uses: AmazeeLabs/drutiny_build_github_action@v0.0.5
+        uses: AmazeeLabs/drutiny_build_github_action@v0.0.6
         with:
           tag-ref: ${{ steps.get-tag.outputs.tag }}
           composer-packages: "amazeelabs/algm_drutiny_plugin, bomoko/lagoon-formatter:dev-master"
           composer-repos: "amazeelabs/algm_drutiny_plugin vcs https://github.com/AmazeeLabs/algm_drutiny.git"
+        env:
+          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Change Directory
         run: cd ./drutiny && ls -la
