@@ -1,6 +1,6 @@
 FROM algmprivsecops/algmcli:latest as algmtools
 
-FROM amazeeio/php:7.2-cli-drupal
+FROM amazeeio/php:7.4-cli-drupal
 
 COPY composer.json composer.lock /app/
 COPY scripts /app/scripts
