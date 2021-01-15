@@ -7,7 +7,7 @@ use Drutiny\Annotation\Param;
 use Drutiny\Audit;
 use Drutiny\Sandbox\Sandbox;
 use Drutiny\Annotation\Token;
-use PhpIP\IPBlock;
+use IPLib\Factory;
 
 
 /**
@@ -100,8 +100,9 @@ class CdnCheck extends Audit {
     $cdnIpAddresses = $this->cdnIpAddresses();
     if ($selectedCdn = $cdnIpAddresses[$cdn]) {
       foreach ($selectedCdn as $ip) {
-        $block = IPBlock::create($ip);
-        if ($block->contains($hostIp)) {
+        $range = Factory::rangeFromString($ip);
+        $address = Factory::addressFromString($hostIp);
+        if ($range->contains($address)) {
           $msg = sprintf('The domain %s (%s) has been found in the ip range of %s which matches the %s CDN', $url, $hostIp, $ip, ucfirst($cdn));
           $sandbox->setParameter('status', $msg);
           return Audit::PASS;
