@@ -6,6 +6,7 @@ policies:
   'algm:DrushStatus': { severity: medium }
   #'algm:FileSystemAnalysis': { severity: medium }
   'algm:ModuleUpdates': { severity: high }
+  'algm:StageFileProxy': { severity: normal }
   # Change the cron_max_interval param with your "between crons" period, default set to 24h.
   'Drupal-8:CronHasRun':
     {

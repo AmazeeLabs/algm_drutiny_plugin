@@ -1,0 +1,49 @@
+title: "Detect double file extensions"
+class: \Drutiny\algm\Audit\DoubleFileExtension
+name: Security:DoubleFileExtension
+tags:
+  - Drupal 8
+  - Drupal 7
+  - Security
+description: |
+  A policy that will check for potentially malicious file extensions which may have been uploaded prior to https://www.drupal.org/sa-core-2020-012.
+
+  Drupal Security team: "Additionally, it's recommended that you audit all previously uploaded files to check for malicious extensions. Look specifically for files that include more than one extension, like .php.txt or .html.gif."
+success: No double file extensions could be found
+failure: >-
+  {{ results.found }} file/s with double extensions was/were found:
+
+  {{#results.findings}}{{ markdown_display }}{{/results.findings}}
+parameters:
+  directory:
+    default: "%root/sites"
+  exclude:
+    default:
+      - "sites/default/files/js"
+      - "sites/default/files/js/optimized"
+  filetypes:
+    default:
+      - php
+      - phar
+      - php
+      - sql
+      - pl
+      - sh
+      - py
+      - cgi
+      - asp
+      - js
+      - html
+      - htm
+      - phtml
+      - gif
+      - img
+      - png 
+      - jpg 
+      - jpeg
+      - bz2
+      - gz
+      - tar
+      - tgz
+      - zip
+severity: 'critical'

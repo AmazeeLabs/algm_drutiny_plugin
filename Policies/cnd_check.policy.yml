@@ -1,0 +1,14 @@
+title: "CDN Check"
+class: \Drutiny\algm\Audit\CdnCheck
+name: algm:CdnCheck
+tags:
+  - Speed
+description: |
+  Runs to check if the site is using the a CDN.
+success: |
+  {{ status }}
+failure: |
+  {{ status }}
+parameters:
+  cdn:
+    default: 'fastly'

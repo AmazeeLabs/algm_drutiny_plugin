@@ -2,12 +2,11 @@
 
 namespace Drutiny\algm\Audit;
 
+use Drutiny\algm\Utils\Common;
 use Drutiny\Audit;
 use Drutiny\Sandbox\Sandbox;
 use Drutiny\Annotation\Token;
 use Drutiny\Annotation\Param;
-use Drutiny\Target\DrushTarget;
-use Drutiny\RemediableInterface;
 use Spatie\SslCertificate\SslCertificate;
 
 
@@ -30,24 +29,6 @@ use Spatie\SslCertificate\SslCertificate;
 class SSLChecker extends Audit {
 
   /**
-   * Converts string from printenv to associative array
-   *
-   * @param string $input
-   * @return array | null
-   */
-  private function envStringToAssociativeArray($input) {
-    $env=[];
-    $lines = explode(PHP_EOL, $input);
-    foreach ($lines as $line) {
-      $split = explode("=", $line, 2);
-      if ($split[0]) {
-        $env[$split[0]] = $split[1];
-      }
-    }
-    return count($env) ? $env : NULL;
-  }
-
-  /**
    * This will be called before audit().
    *
    * Must return TRUE to continue audit.
@@ -67,7 +48,7 @@ class SSLChecker extends Audit {
     // Execute and clean the output into usable data.
     $command = "printenv";
     $output = $sandbox->exec($command);
-    $env = $this->envStringToAssociativeArray($output);
+    $env = Common::envStringToAssociativeArray($output);
 
     if (!$env) {
       throw new \Exception("Could not fetch environment variables.");
