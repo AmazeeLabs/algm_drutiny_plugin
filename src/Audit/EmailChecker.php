@@ -47,7 +47,6 @@ class EmailChecker extends Audit {
     // Not in actual use for now
     $module_to_check = $sandbox->getParameter('module_to_check');
 
-    $status_output = '';
     $status = $sandbox->drush(['format' => 'json'])->status();
     if (!$status) {
       return Audit::ERROR;
@@ -82,7 +81,7 @@ class EmailChecker extends Audit {
       return Audit::WARNING;
     }
 
-   // Let's start module by module
+    // Let's start module by module
     // because modules hav different settings
     $info = $sandbox->drush(['format' => 'json'])->pmList();
 
@@ -91,10 +90,17 @@ class EmailChecker extends Audit {
       // do something
       $cmd = "drush cget reroute_email.settings --include-overridden --format=json";
       $settings = json_decode($sandbox->exec($cmd), TRUE);
-      // TODO: Better logic on address condition maybe?
-      if($settings['enable'] && $settings['address']) {
+      if($settings['enable']) {
+        $address = $settings['address'];
+
+        if(!filter_var($address, FILTER_VALIDATE_EMAIL)){
+          $msg = 'Reroute email is enabled but is not using a valid email address' . PHP_EOL;
+          $sandbox->setParameter('warning_message', $msg);
+          return Audit::WARNING;
+        }
+
         $status_output = 'Reroute email is enabled.' . PHP_EOL;
-        $status_output .= 'All emails are redirected to: ' . $settings['address'] . PHP_EOL;
+        $status_output .= 'All emails are redirected to: ' . $address . PHP_EOL;
         $sandbox->setParameter('status', trim($status_output));
         return Audit::SUCCESS;
       }
@@ -103,6 +109,23 @@ class EmailChecker extends Audit {
     // SMTP
     if (isset($info['smtp']) && strtolower($info['smtp']['status']) === 'enabled') {
       // do something
+      $cmd = "drush cget smtp.settings --include-overridden --format=json";
+      $settings = json_decode($sandbox->exec($cmd), TRUE);
+
+      $enabled = $settings['smtp_on'];
+      // TODO: Requires some testing if the setting is disabled
+      if($enabled) {
+
+        $smtp_host = $settings['smtp_host'];
+        $search_for = 'mailhog';
+
+        if (preg_match("/{$search_for}/i", $smtp_host)) {
+          $status_output = 'SMTP host is configured to use: ' . $smtp_host . PHP_EOL;
+          $sandbox->setParameter('status', trim($status_output));
+          return Audit::SUCCESS;
+        }
+      }
+
     }
 
     // Swiftmailer
