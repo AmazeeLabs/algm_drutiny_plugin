@@ -3,10 +3,11 @@ description: 'This audit is for testing Drupal 8 & Drupal 9 policies which are i
 policies:
   # WIP
   # 'algm:BrokenLinksSitemap': { severity: medium }
-  'algm:BrokenLinks': { severity: medium }
+  'algm:BrokenLinks': { severity: high }
   'algm:D8CoreOutdated': { severity: medium }
   'algm:D8DrushOutdated': { severity: medium }
-  'algm:SSLChecker': { severity: medium }
+  'algm:SSLChecker': { severity: high }
   'algm:StageFileProxy': { severity: medium }
   'algm:StorageSpace': { severity: medium }
-  'algm:CdnCheck': { severity: medium }
+  'algm:CdnCheck': { severity: high }
+  'algm:DevModulesEnabled': { severity: high}
