@@ -82,7 +82,7 @@ class EmailChecker extends Audit {
     }
 
     // Let's start module by module
-    // because modules hav different settings
+    // because modules have different settings
     $info = $sandbox->drush(['format' => 'json'])->pmList();
 
     // Reroute_email
@@ -113,7 +113,6 @@ class EmailChecker extends Audit {
       $settings = json_decode($sandbox->exec($cmd), TRUE);
 
       $enabled = $settings['smtp_on'];
-      // TODO: Requires some testing if the setting is disabled
       if($enabled) {
 
         $smtp_host = $settings['smtp_host'];
@@ -166,48 +165,59 @@ class EmailChecker extends Audit {
     $prod_smtp_host = '';
     $dev_reroute_email = '';
     foreach ($files as $file) {
+      $config_line = substr($file, strpos($file, ":") + 1);
       $search_for = 'development';
-      $is_development_setting_file = preg_match("/{$search_for}/i", $file);
+      $is_development_setting_file = preg_match("/{$search_for}/i", $config_line);
       $search_for = 'production';
-      $is_production_setting_file = preg_match("/{$search_for}/i", $file);
+      $is_production_setting_file = preg_match("/{$search_for}/i", $config_line);
       $search_for = "\[\'smtp_host\'\]";
-      $contains_smtp_host = preg_match("/{$search_for}/i", $file);
+      $contains_smtp_host = preg_match("/{$search_for}/i", $config_line);
       $search_for = "reroute_email";
-      $has_reroute_in_settings = preg_match("/{$search_for}/i", $file);
+      $has_reroute_in_settings = preg_match("/{$search_for}/i", $config_line);
+
+      $comments = '//';
+      $line_commented_out = substr($config_line, 0, strlen($comments)) === $comments;
 
       $split = "['smtp_host'] =";
       if ($is_development_setting_file && $contains_smtp_host) {
         $smtp_host = explode($split,$file);
-        $dev_smtp_host = $smtp_host[1];
+        $smtp_host = preg_replace("/\'|\;/", "" , $smtp_host[0]);
+        $dev_smtp_host = [
+          'details' => $smtp_host,
+          'commented_out' => $line_commented_out
+        ];
       }
       if ($is_production_setting_file && $contains_smtp_host) {
         $smtp_host = explode($split,$file);
-        $prod_smtp_host = $smtp_host[1];
+        $smtp_host = preg_replace("/\'|\;/", "" , $smtp_host[0]);
+        $prod_smtp_host = [
+          'details' => $smtp_host,
+          'commented_out' => $line_commented_out
+        ];
       }
       if ($is_development_setting_file && $has_reroute_in_settings) {
-        $arr = explode(" = ",$file);
-        $dev_reroute_email = $arr[1];
+        $email = explode(" = ",$file);
+        $email = preg_replace("/\'|\;/", "" , $email[1]);
+        $dev_reroute_email = [
+          'details' => $email,
+          'commented_out' => $line_commented_out
+        ];
       }
     }
 
-    $prod_smtp_host = preg_replace("/\'|\;/", "" , $prod_smtp_host);
-    $dev_smtp_host = preg_replace("/\'|\;/", "" , $dev_smtp_host);
-    $dev_reroute_email = preg_replace("/\'|\;/", "" , $dev_reroute_email);
-
-    // Another case is not to have retoure_email but have something like
+    // Another case is not to have reroute_email but have something like
     // config['amag_processes.location_settings']['reroute_email_address'] = 'development+amag@amazee.com';
     // so let's try to detect something like that
-    // TODO: Maybe check if lines are commented at the beginning
-    // or even better get the actual config and check with site config
-    if (!empty($dev_reroute_email)) {
-      $status_output = "All emails are redirected to " . $dev_reroute_email . PHP_EOL;
+    if (!empty($dev_reroute_email) && $dev_reroute_email['details'] && !$dev_reroute_email['commented_out']) {
+      $status_output = "All emails are redirected to " . $dev_reroute_email['details'] . PHP_EOL;
       $sandbox->setParameter('status', trim($status_output));
       return Audit::SUCCESS;
     }
 
-    if (!empty($prod_smtp_host)
-      && !empty($dev_smtp_host)
-      && $prod_smtp_host != $dev_smtp_host) {
+    // Check to see if the smtp details not the same for prod and dev
+    if (!empty($prod_smtp_host) && !empty($dev_smtp_host)
+      && $prod_smtp_host['details'] != $dev_smtp_host['details']
+      && !$prod_smtp_host['commented_out'] && !$dev_smtp_host['commented_out']) {
       $status_output = "SMTP host is different on prod and dev environments." . PHP_EOL;
       $status_output .= "SMTP host in production:\t" . $prod_smtp_host . PHP_EOL;
       $status_output .= "SMTP host in environment:\t" . $dev_smtp_host . PHP_EOL;
