@@ -1,0 +1,17 @@
+title: "Email checker"
+class: \Drutiny\algm\Audit\EmailChecker
+name: algm:EmailChecker
+tags:
+  - Email
+  - Routing
+description: |
+  A policy check that emails are not sending on non-prod environments.
+success: |
+  {{ status }}
+failure: |
+  {{ status }}
+warning: |
+  {{ warning_message }}
+parameters:
+  module_to_check:
+    default: reroute_email

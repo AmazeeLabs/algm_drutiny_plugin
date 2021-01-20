@@ -5,39 +5,40 @@ This plugin provides a list of standard policy collections that can be used by D
 
 ## Setup
 
-  1. `git clone git@github.com:AmazeeLabs/algm_drutiny.git`
+1. `git clone git@github.com:AmazeeLabs/algm_drutiny.git`
 
-  2. `composer install -o`
+1. `composer install -o`
 
-  3. Need Drush - https://docs.drush.org/en/9.x/install/
+1. Need Drush - https://docs.drush.org/en/9.x/install/
 
-    We also need Drush locally (preferably Drush 9+). There are also a couple of things you need to ensure your drush alias files have in order to get this working with Drutiny which we will cover below.
+    > We also need Drush locally (preferably Drush 9+). There are also a couple of things you need to ensure your drush alias files have in order to get this working with Drutiny which we will cover below.
+    >
+    > If you have drush but need to update to Drush 9 way of things, then this is your friend:
+    > https://stackoverflow.com/questions/55587919/where-drush-9-aliases-file-should-be-located-in-drupal-8
+    > 
+    > To install globally in terminal (But aware that this will affect previous Drush setup)
+    > In your user folder.
+    > 
+    > $ `composer global require drush/drush:^9`
 
-    If you have drush but need to update to Drush 9 way of things, then this is your friend:
-    https://stackoverflow.com/questions/55587919/where-drush-9-aliases-file-should-be-located-in-drupal-8
+1. Drush Setup folder structure in ~/.drush/
 
-    To install globally in terminal (But aware that this will affect previous Drush setup)
-    In your user folder.
-
-    $ `composer global require drush/drush:^9`
-
-  4. Drush Setup folder structure in ~/.drush/
-
+    ```
     ~/.drush/
       - cache/ (might not be there)
       - commands/ (might not be there)
       - sites/ ( Add this Drush Alias folder. This is where you add your sitename.site.yml for each sites you'll connect to.)
       - drush.yml
-
+    
       - drush.yml should have:
-
+    
       drush:
         paths:
           alias-path:
             - '${env.home}/.drush/sites'
+    ```
 
-
-  5. Test Drutiny is running - `./vendor/bin/drutiny`
+1. Test Drutiny is running - `./vendor/bin/drutiny`
 
 ## What is this?
 
@@ -131,18 +132,30 @@ For more config options - this is useful https://github.com/drush-ops/drush/blob
 
 ## Useful things
 
-Checking policy list available to us:
-    `./vendor/bin/drutiny policy:list`
+**Checking policy list available**
+```
+./vendor/bin/drutiny policy:list
+```
 
-Checking profiles list:
-    `./vendor/bin/drutiny profile:list`
+Show only `algm`:
+```
+./vendor/bin/drutiny policy:list | grep algm
+```
 
-You might need to clear Drutiny cache:
-    `./vendor/bin/drutiny cache:clear`
+**Checking profiles list available**
+```
+./vendor/bin/drutiny profile:list
+```
+
+**Clearing Drutiny cache**
+```
+./vendor/bin/drutiny cache:clear
+```
 
 
 ## Development and testing
 
 Inside the package there is a Drupal installation where you can test
-your policies against. Please follow the
-[drupal-web/README.md](drupal-web/README.md) file
+your policies against.
+
+Please follow the [drupal-web/README.md](drupal-web/README.md) file
