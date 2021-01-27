@@ -6,7 +6,7 @@ tags:
   - Drupal 7
   - Security
 description: |
-  A policy that will check for database dumps that are publically exposed and readable by the web server.
+  A policy that will check for database dumps that are publicly exposed and readable by the web server.
 remediation: |
   Due to the severity of this, the following databases were removed:
 
