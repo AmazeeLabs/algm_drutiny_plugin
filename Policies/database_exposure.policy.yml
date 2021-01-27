@@ -1,0 +1,34 @@
+title: "Database exposure check"
+class: \Drutiny\algm\Audit\DatabaseExposure
+name: Security:DatabaseExposure
+tags:
+  - Drupal 8
+  - Drupal 7
+  - Security
+description: |
+  A policy that will check for database dumps that are publically exposed and readable by the web server.
+remediation: |
+  Due to the severity of this, the following databases were removed:
+
+  {{#cleaned}}
+    - {{ . }}
+  {{/cleaned}}
+failure: |
+  Sensitive database{{ plural }} found: {{ results.found }}
+
+  {{#results.findings}}{{ markdown_display }}{{/results.findings}}
+success: No leaked/exposed databases were found
+parameters:
+  root:
+    default: "%root"
+  filetypes:
+    default:
+      - sql
+      - sql.gz
+    description: 'Database file extensions to look for.'
+    type: string
+  exclude:
+      default:
+        - core
+      description: 'Directories to exclude from find'
+severity: 'critical'
