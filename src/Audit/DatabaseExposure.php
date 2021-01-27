@@ -141,7 +141,7 @@ class DatabaseExposure extends Audit implements RemediableInterface {
     $list = $sandbox->getParameter('results');
 
     $stat = $sandbox->drush(['format' => 'json'])->status();
-    $root =  strtr($root, $stat['%paths']);
+    $root = strtr($root, $stat['%paths']);
 
     $output = '';
     if (!empty($list['filepaths'])) {
