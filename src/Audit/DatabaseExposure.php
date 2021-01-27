@@ -130,7 +130,7 @@ class DatabaseExposure extends Audit implements RemediableInterface {
     $sandbox->setParameter('plural', count($results) > 1 ? 's' : '');
 
     if (empty($matches)) {
-        Audit::SUCCESS;
+        return Audit::SUCCESS;
     }
     return Audit::FAIL;
   }
