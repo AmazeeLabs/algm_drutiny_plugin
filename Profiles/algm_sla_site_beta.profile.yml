@@ -9,5 +9,7 @@ policies:
   'algm:SSLChecker': { severity: high }
   'algm:StageFileProxy': { severity: medium }
   'algm:StorageSpace': { severity: medium }
-  'algm:CdnCheck': { severity: high }
   'algm:DevModulesEnabled': { severity: high}
+  # Security
+  'Security:DatabaseExposure': { severity: critical }
+  'algm:CdnCheck': { severity: high }
