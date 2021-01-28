@@ -28,7 +28,8 @@ parameters:
     description: 'Database file extensions to look for.'
     type: string
   exclude:
-      default:
-        - core
-      description: 'Directories to exclude from find'
+    default:
+      - core
+      - sites/default/files/private
+    description: 'Directories to exclude from find'
 severity: 'critical'
