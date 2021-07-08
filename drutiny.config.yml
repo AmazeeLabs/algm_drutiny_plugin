@@ -1,0 +1,62 @@
+Target:
+  - Drutiny\Target\DrushTarget
+  - Drutiny\Target\TargetNone
+Command:
+  - Drutiny\Command\AuditGenerateCommand
+  - Drutiny\Command\AuditInfoCommand
+  - Drutiny\Command\AuditListCommand
+  - Drutiny\Command\AuditRunCommand
+  - Drutiny\Command\AuditUsageCommand
+  - Drutiny\Command\AuthenticateCommand
+  - Drutiny\Command\PluginListCommand
+  - Drutiny\Command\PolicyAuditCommand
+  - Drutiny\Command\PolicyDownloadCommand
+  - Drutiny\Command\PolicyInfoCommand
+  - Drutiny\Command\PolicyListCommand
+  - Drutiny\Command\PolicySearchCommand
+  - Drutiny\Command\ProfileGenerateCommand
+  - Drutiny\Command\ProfileInfoCommand
+  - Drutiny\Command\ProfileListCommand
+  - Drutiny\Command\ProfileRunCommand
+  - Drutiny\Command\ProfileDownloadCommand
+  - Drutiny\Command\TargetMetadataCommand
+  - Drutiny\Command\CacheClearCommand
+  - Drutiny\Command\StatusCommand
+Template:
+  - src/Report/templates/html
+  - src/Report/templates/markdown
+DomainList:
+  yaml: Drutiny\DomainList\DomainListYamlFile
+Format:
+  html: Drutiny\Report\Format\HTML
+  json: Drutiny\Report\Format\JSON
+  markdown: Drutiny\Report\Format\Markdown
+  terminal: Drutiny\Report\Format\Terminal
+  console: Drutiny\Report\Format\Console
+Driver:
+  drush: Drutiny\Driver\DrushRouter::create
+PolicySource:
+  - Drutiny\PolicySource\DrutinyGitHubIO
+  - Drutiny\PolicySource\LocalFs
+ProfileSource:
+  - Drutiny\Profile\ProfileSourceDrutinyGitHubIO
+  - Drutiny\Profile\ProfileSourceLocalFs
+Cache:
+  exec: Symfony\Component\Cache\Adapter\FilesystemAdapter
+  drutiny.github.io.policy: Symfony\Component\Cache\Adapter\FilesystemAdapter
+  http: Symfony\Component\Cache\Adapter\FilesystemAdapter
+ExpressionFunction:
+  - Drutiny\ExpressionFunction\PolicyExpressionFunction
+  - Drutiny\ExpressionFunction\SemverGtExpressionFunction
+  - Drutiny\ExpressionFunction\SemverGteExpressionFunction
+  - Drutiny\ExpressionFunction\TargetExpressionFunction
+  - Drutiny\ExpressionFunction\DrupalModuleEnabledExpressionFunction
+CredentialSchema:
+  http:
+    user_agent:
+      type: string
+      description: Customize Drutiny requests to send a defined User Agent on all HTTP requests.
+  github:
+    personal_access_token:
+      type: string
+      description: A github personal oauth token.
